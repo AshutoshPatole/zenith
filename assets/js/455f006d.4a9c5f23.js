@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[756],{7584:e=>{e.exports=JSON.parse('{"label":"bg","permalink":"/tags/bg","allTagsPath":"/tags","count":1,"items":[{"id":"Linux/Commands/Foreground-Background","title":"Foreground-Background","description":"Understanding Foreground and Background Processes:","permalink":"/fg-and-bg"}],"unlisted":false}')}}]);
