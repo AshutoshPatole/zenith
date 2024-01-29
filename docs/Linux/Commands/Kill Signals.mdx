@@ -1,0 +1,44 @@
+---
+sidebar_position: 3
+sidebar_label: 'Kill Signals'
+slug: '/kill'
+author: 'Ashutosh Patole'
+tags: 
+  - kill
+  - jobs
+---
+
+
+In Linux, the kill command is used to send signals to processes, allowing you to control and manage their behavior. The default signal sent by the kill command is SIGTERM (signal number 15), which instructs the process to terminate gracefully. If a process does not respond to SIGTERM, you can use the SIGKILL signal (signal number 9) to forcefully terminate it.
+
+There are several other signals you can use with the kill command to send different instructions to processes. You can view a list of all available signals and their corresponding numbers using the kill -l command. Here's an example:
+
+```bash
+kill -l
+```
+
+
+This will display a list of signals, along with their numeric values.
+
+Here is a markdown table of common signals:
+| Signal Number | Signal Name | Description                                            |
+|---------------|-------------|--------------------------------------------------------|
+| 1             | SIGHUP      | Hangup: Terminate the process on controlling terminal  |
+| 2             | SIGINT      | Interrupt: Terminate the process by interrupting it   |
+| 3             | SIGQUIT     | Quit: Terminate the process and generate a core dump   |
+| 9             | SIGKILL     | Kill: Forcefully terminate the process                 |
+| 15            | SIGTERM     | Terminate: Ask the process to terminate gracefully     |
+| 17            | SIGSTOP     | Stop: Stop the process (cannot be caught or ignored)   |
+| 18            | SIGCONT     | Continue: Resume a stopped process                     |
+
+
+:::info
+
+Please note that there are more signals available, and you can find additional information in the signal(7) manual page by running:
+
+:::
+```bash
+man 7 signal
+```
+
+This will provide detailed information about signals and their meanings.
