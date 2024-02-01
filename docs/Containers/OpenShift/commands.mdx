@@ -1,0 +1,88 @@
+---
+sidebar_position: 1
+slug: /frequent-commands
+title: Commands Cheatsheet
+---
+
+---
+
+
+1. To get node details
+
+```bash
+$ oc describe node $NODE_NAME
+```
+
+A Node's status contains the following information:
+
+- Addresses (external ip, internal ip, hostname)
+- Conditions (disk, memory, process id, status)
+- Capacity and Allocatable (cpu & memory available and allocated)
+- System Info
+
+2. To mark a Node unschedulable, run:
+
+```bash
+$ oc cordon $NODE_NAME
+```
+
+3. Create the Deployment by running the following command:
+```bash 
+$ kubectl apply -f deployment.yaml
+```
+
+:::info
+you can also pass external yaml files like
+```bash
+$ kubectl apply -f https://k8s.io/examples/controllers/nginx-deployment.yaml
+```
+:::
+
+4. Run this command to check if the Deployment was created.
+
+```bash
+$ kubectl get deployments
+
+NAME               READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-deploy   3/3     3            3           23d
+```
+
+5. To see the Deployment rollout status, run
+
+```bash
+$ kubectl rollout status deployment/nginx-deploy
+
+Waiting for rollout to finish: 2 out of 3 new replicas have been updated...
+deployment "nginx-deploy" successfully rolled out
+```
+
+6. To see the ReplicaSet (rs) created by the Deployment, run:
+
+```bash
+$ kubectl get rs
+
+NAME                          DESIRED   CURRENT   READY   AGE
+nginx-deploy-34729385   3         3         3       23d
+```
+
+7. To see the labels automatically generated for each Pod, run:
+
+```bash
+$ kubectl get pods --show-labels
+
+NAME                                READY     STATUS    RESTARTS   AGE       LABELS
+nginx-deploy-34729385-7ci7o   1/1       Running   0          18s       app=nginx,pod-template-hash=3123191453
+nginx-deploy-34729385-kzszj   1/1       Running   0          18s       app=nginx,pod-template-hash=3123191453
+nginx-deploy-34729385-qqcnn   1/1       Running   0          18s       app=nginx,pod-template-hash=3123191453
+
+```
+8. Get details of your Deployment:
+
+```bash
+kubectl describe deployments
+```
+
+9. You can scale a Deployment by using the following command:
+```bash
+kubectl scale deployment/nginx-deployment --replicas=10
+```

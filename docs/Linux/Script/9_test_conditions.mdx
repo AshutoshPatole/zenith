@@ -22,7 +22,7 @@ title: Test conditions in script
 [[ -o noclobber ]]|	If OPTIONNAME is enabled|
 |[[ ! EXPR ]]|	Not|
 |[[ X && Y ]]|	And|
-|[[ X [\|\|](/test-conditions#note) Y ]]|	Or|
+|[[ X \|\| Y ]]|	Or|
 |[[ -e FILE ]]| True if the FILE Exists|
 |[[ -r FILE ]]|	True if the FILE is Readable|
 |[[ -h FILE ]]|	True if the FILE is Symlink|
@@ -45,6 +45,3 @@ title: Test conditions in script
 |[[ FILE1 -nt FILE2 ]]|	The FILE 1 is more recent than FILE 2|
 |[[ FILE1 -ot FILE2 ]]|	The FILE 2 is more recent than FILE 1|
 |[[ FILE1 -ef FILE2 ]]|	Same files|
-
-#### Note*
-double pipe - `||` 
