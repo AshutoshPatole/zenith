@@ -1,0 +1,110 @@
+---
+sidebar_position: 14
+slug: /email-protocols
+title: Email Protocols
+---
+---
+Email is delivered using a client/server architecture. An email message is created using a mail client program. This program then sends the message to a server. The server then forwards the message to the recipient's email server, where the message is then supplied to the recipient's email client.
+To enable this process, a variety of standard network protocols allow different machines, often running different operating systems and using different email programs, to send and receive email.
+## Mail Transfer Protocol
+Mail delivery from a client application to the server, and from an originating server to the destination server, is handled by the **Simple Mail Transfer Protocol (SMTP)**.
+
+The primary purpose of SMTP is to transfer email between mail servers. However, it is critical for email clients as well. To send email, the client sends the message to an outgoing mail server, which in turn contacts the destination mail server for delivery. For this reason, it is necessary to specify an SMTP server when configuring an email client.
+
+One important point to make about the SMTP protocol is that it does not require authentication. This allows anyone on the Internet to send email to anyone else or even to large groups of people. It is this characteristic of SMTP that makes junk email or spam possible. Imposing relay restrictions limits random users on the Internet from sending email through your SMTP server, to other servers on the internet. Servers that do not impose such restrictions are called **open relay servers**.
+
+## Mail Access Protocols
+There are two primary protocols used by email client applications to retrieve email from mail servers: the **Post Office Protocol (POP)** and the **Internet Message Access Protocol (IMAP)**.
+
+### POP
+The default POP server under Red Hat Enterprise Linux is `/usr/lib/cyrus-imapd/pop3d` and is provided by the `cyrus-imapd` package. When using a POP server, email messages are downloaded by email client applications. By default, most POP email clients are automatically configured to delete the message on the email server after it has been successfully transferred, however this setting usually can be changed. POP is fully compatible with important Internet messaging standards, such as **Multipurpose Internet Mail Extensions (MIME)**, which allow for email attachments.
+
+### IMAP
+The default IMAP server under Red Hat Enterprise Linux is `/usr/lib/cyrus-imapd/imapd` and is provided by the `cyrus-imapd` package. When using an IMAP mail server, email messages remain on the server where users can read or delete them. IMAP also allows client applications to create, rename, or delete mail directories on the server to organize and store email.
+
+IMAP is particularly useful for those who access their email using multiple machines. The protocol is also convenient for users connecting to the mail server via a slow connection, because only the email header information is downloaded for messages until opened, saving bandwidth. The user also has the ability to delete messages without viewing or downloading them.
+
+## Mail Program Classifications
+
+### Mail Transport Agent (MTA)
+A Mail Transport Agent (MTA) transports email messages between hosts using SMTP. A message may involve several MTAs as it moves to its intended destination.
+
+While the delivery of messages between machines may seem rather straightforward, the entire process of deciding if a particular MTA can or should accept a message for delivery is quite complicated. In addition, due to problems from spam, use of a particular MTA is usually restricted by the MTA's configuration or the access configuration for the network on which the MTA resides.
+
+### Mail Delivery Agent (MDA)
+A Mail Delivery Agent (MDA) is invoked by the MTA to file incoming email in the proper user's mailbox. In many cases, the MDA is actually a **Local Delivery Agent (LDA)**, such as mail or Procmail.
+Any program that actually handles a message for delivery to the point where it can be read by an email client application can be considered an MDA. For this reason, some MTAs (such as **Sendmail** and **Postfix**) can fill the role of an MDA when they append new email messages to a local user's mail spool file. In general, MDAs do not transport messages between systems nor do they provide a user interface; MDAs distribute and sort messages on the local machine for an email client application to access.
+
+### Mail User Agent (MUA)
+A Mail User Agent (MUA) is synonymous with an email client application. An MUA is a program that, at the very least, allows a user to read and compose email messages. MUAs may be graphical, such as Evolution, or have a very simple, text-based interface, such as `mutt`.
+
+## Mailx Configuration
+In order to start sending mail from RHEL machines we have to setup SMTP configuration.
+
+```bash
+[captain@marvel-studios ~]$ sudo yum install mailx -y
+Last metadata expiration check: 2:59:02 ago on Sun 20 Mar 2022 03:56:48 AM GMT.
+Package mailx-12.5-29.el8.aarch64 is already installed.
+Dependencies resolved.
+Nothing to do.
+Complete!
+```
+This will create a **mail.rc** file in /etc directory. We will be using sendgrid as our SMTP here, add these configuration at the end of the file.
+
+```bash title="/etc/mail.rc"
+# My configuration
+set smtp=smtp.sendgrid.net:587
+set smtp-auth-user=apikey
+set smtp-auth-password=<your-api-key>
+set ssl-verify=ignore
+set nss-config-dir=/etc/pki/nssdb/
+set smtp-use-starttls
+set from="no-reply@ashutoshpatole.me"
+```
+Save and close the file. Now check if our setup works by sending a sample email.
+
+```bash
+[captain@marvel-studios ~]$ echo "this is hello world" | mail -s "first mail" -v apatole479@gmail.com
+Resolving host smtp.sendgrid.net . . . done.
+Connecting to 52.220.95.193:587 . . . connected.
+220 SG ESMTP service ready at geopod-ismtpd-2-1
+>>> EHLO vm1.subnet12091926.vcn12091926.oraclevcn.com
+250-smtp.sendgrid.net
+250-8BITMIME
+250-PIPELINING
+250-SIZE 31457280
+250-STARTTLS
+250-AUTH PLAIN LOGIN
+250 AUTH=PLAIN LOGIN
+>>> STARTTLS
+220 Begin TLS negotiation now
+>>> EHLO vm1.subnet12091926.vcn12091926.oraclevcn.com
+250-smtp.sendgrid.net
+250-8BITMIME
+250-PIPELINING
+250-SIZE 31457280
+250-STARTTLS
+250-AUTH PLAIN LOGIN
+250 AUTH=PLAIN LOGIN
+>>> AUTH LOGIN
+334 VXNlcm5hbWU6
+>>> YXBpa2V5
+334 UGFzc3dvcmQ6
+>>> U0cuQklpVHZ1bVFUWHVSajRiVVc3d1VVQS5VYXo5Y3o2cmowcjRxRjBPN1NtQmJqUkJrZEFTZGFIcGY1Nmd5eHZTQVlJ
+235 Authentication successful
+>>> MAIL FROM:<no-reply@ashutoshpatole.me>
+250 Sender address accepted
+>>> RCPT TO:<apatole479@gmail.com>
+250 Recipient address accepted
+>>> DATA
+354 Continue
+>>> .
+250 Ok: queued as xVKwZOunTierCGLz1Is_hg
+>>> QUIT
+221 See you later
+```
+
+**-v** is verbose flag.
+
+{/* ![Email](/img/email_sample.png) */}
+

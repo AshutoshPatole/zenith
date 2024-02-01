@@ -1,0 +1,96 @@
+---
+sidebar_position: 6
+slug: /acl
+title: Access Control Lists
+---
+
+---
+
+Files and directories have permission sets for the owner of the file, the group associated with the file, and all other users for the system. However, these permission sets have limitations. For example, different permissions cannot be configured for different users. Thus, Access Control Lists (ACLs) were implemented.
+
+Along with support in the kernel, the acl package is required to implement ACLs. It contains the utilities used to add, modify, remove, and retrieve ACL information. The cp and mv commands copy or move any ACLs associated with files and directories.
+
+## Mounting File Systems
+Before using ACLs for a file or directory, the partition for the file or directory must be mounted with ACL support. If it is a local ext3 file system, it can mounted with the following command:
+```bash
+mount -t ext3 -o acl <device-name> <partition>
+```
+For example:
+```bash
+mount -t ext3 -o acl /dev/VolGroup00/LogVol02 /work
+```
+Alternatively, if the partition is listed in the /etc/fstab file, the entry for the partition can include the acl option:
+```bash
+LABEL=/work      /work       ext3    acl        1 2
+```
+If an ext3 file system is accessed via Samba and ACLs have been enabled for it, the ACLs are recognized because Samba has been compiled with the --with-acl-support option. No special flags are required when accessing or mounting a Samba share.
+
+## NFS
+By default, if the file system being exported by an NFS server supports ACLs and the NFS client can read ACLs, ACLs are utilized by the client system.
+To disable ACLs on NFS shares when configuring the server, include the no_acl option in the /etc/exports file. To disable ACLs on an NFS share when mounting it on a client, mount it with the no_acl option via the command line or the /etc/fstab file.
+
+## Setting Access ACL
+
+There are two types of ACLs: access ACLs and default ACLs. An access ACL is the access control list for a specific file or directory. A default ACL can only be associated with a directory; if a file within the directory does not have an access ACL, it uses the rules of the default ACL for the directory. Default ACLs are optional.
+
+ACLs can be configured:
+- Per user
+- Per group
+- Via the effective rights mask
+For users not in the user group for the file
+The setfacl utility sets ACLs for files and directories. Use the -m option to add or modify the ACL of a file or directory:
+```bash
+setfacl -m <rules> <files>
+```
+Rules `(<rules>)` must be specified in the following formats. Multiple rules can be specified in the same command if they are separated by commas.
+- u:`<uid>:<perms>`
+    Sets the access ACL for a user. The user name or UID may be specified. The user may be any valid user on the system.
+- g:`<gid>:<perms>`
+    Sets the access ACL for a group. The group name or GID may be specified. The group may be any valid group on the system.
+- m:`<perms>`
+    Sets the effective rights mask. The mask is the union of all permissions of the owning group and all of the user and group entries.
+- o:`<perms>`
+    Sets the access ACL for users other than the ones in the group for the file.
+
+White space is ignored. Permissions `(<perms>)` must be a combination of the characters r, w, and x for read, write, and execute.
+If a file or directory already has an ACL, and the setfacl command is used, the additional rules are added to the existing ACL or the existing rule is modified.
+For example, to give read and write permissions to user thor:
+```bash
+setfacl -m u:thor:rw /project/somefile
+```
+To remove all the permissions for a user, group, or others, use the -x option and do not specify any permissions:
+```bash
+setfacl -x <rules> <files>
+```
+For example, to remove all permissions from the user with UID 500:
+```bash
+setfacl -x u:500 /project/somefile
+```
+
+## Setting Default ACL
+To set a default ACL, add `d:` before the rule and specify a directory instead of a file name.
+For example, to set the default ACL for the /share/ directory to read and execute for users not in the user group (an access ACL for an individual file can override it):
+```bash
+setfacl -m d:o:rx /share
+```
+
+## Retreiving ACL
+To determine the existing ACLs for a file or directory, use the getfacl command. In the example below, the getfacl is used to determine the existing ACLs for a file.
+```bash
+getfacl home/thor/picture.png
+```
+The above command returns the following output:
+```bash
+# file: home/thor/picture.png
+# owner: thor
+# group: thor
+user::rw-
+group::r--
+other::r--
+```
+
+:::caution
+## Archiving file system with ACL
+
+The `tar` and `dump` commands do not backup ACLs. Instead use **`star`** which is similar to tar to generate ACL archieve files.
+:::

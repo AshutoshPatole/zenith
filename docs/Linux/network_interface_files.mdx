@@ -1,0 +1,86 @@
+---
+sidebar_position: 9
+slug: /network-interface-files
+title: Network Interface
+---
+---
+
+The configuration files for network interfaces are located in the `/etc/sysconfig/network-scripts/` directory. The scripts used to activate and deactivate these network interfaces are also located here. Although the number and type of interface files can differ from system to system, there are three categories of files that exist in this directory:
+- Interface configuration files
+- Interface control scripts
+- Network function files
+The files in each of these categories work together to enable various network devices.
+
+## Network Configuration Files
+
+The primary network configuration files are as follows:
+- **/etc/hosts**
+
+    The main purpose of this file is to resolve host names that cannot be resolved any other way. It can also be used to resolve host names on small networks with no DNS server. Regardless of the type of network the computer is on, this file should contain a line specifying the IP address of the loopback device (127.0.0.1) as localhost.localdomain.
+- **/etc/resolv.conf**
+
+    This file specifies the IP addresses of DNS servers and the search domain. Unless configured to do otherwise, the network initialization scripts populate this file. 
+- **/etc/sysconfig/network**
+
+    This file specifies routing and host information for all network interfaces. It is used to contain directives which are to have global effect and not to be interface specific.
+- **/etc/sysconfig/network-scripts/ifcfg-(interface-name)**
+
+    For each network interface, there is a corresponding interface configuration script. Each of these files provide information specific to a particular network interface. 
+
+
+## Interface Configuration Files
+
+Interface configuration files control the software interfaces for individual network devices. As the system boots, it uses these files to determine what interfaces to bring up and how to configure them. These files are usually named `ifcfg-<name>` , where `<name>` refers to the name of the device that the configuration file controls.
+### Ethernet Interfaces
+`/etc/sysconfig/network-scripts/ifcfg-eth0`, which controls the first Ethernet network interface card or NIC in the system. In a system with multiple NICs, there are multiple ifcfg-eth`<X>`  files (where `<X>` is a unique number corresponding to a specific interface). Because each device has its own configuration file, an administrator can control how each interface functions individually.
+
+The following is a sample ifcfg-eth0 file for a system using a fixed IP address:
+```bash
+DEVICE=eth0
+BOOTPROTO=none
+ONBOOT=yes
+NETMASK=255.255.255.0
+IPADDR=10.0.1.27
+USERCTL=no
+```
+The values required in an interface configuration file can change based on other values. For example, the ifcfg-eth0 file for an interface using DHCP looks different because IP information is provided by the DHCP server:
+```bash
+DEVICE=eth0
+BOOTPROTO=dhcp
+ONBOOT=yes
+```
+### Local loopback interface
+
+A local loopback interface is often used in testing, as well as being used in a variety of applications that require an IP address pointing back to the same system. Any data sent to the loopback device is immediately returned to the host's network layer.
+```bash
+DEVICE=lo
+IPADDR=127.0.0.1
+NETMASK=255.0.0.0
+NETWORK=127.0.0.0
+# If you're having problems with gated making 127.0.0.0/8 a martian,
+# you can change this to something else (255.255.255.255, for example)
+BROADCAST=127.255.255.255
+ONBOOT=yes
+NAME=loopback
+```
+:::caution
+The loopback interface script, **/etc/sysconfig/network-scripts/ifcfg-lo**, should never be edited manually. Doing so can prevent the system from operating correctly.
+:::
+
+### Infrared Interface
+**ifcfg-irlan0**
+An infrared interface allows information between devices, such as a laptop and a printer, to flow over an infrared link. This works in a similar way to an Ethernet device except that it commonly occurs over a peer-to-peer connection.
+
+## Interface Control Script
+The interface control scripts activate and deactivate system interfaces. There are two primary interface control scripts that call on control scripts located in the /etc/sysconfig/network-scripts/ directory:
+- /sbin/ifdown and
+- /sbin/ifup
+
+The **ifup** and **ifdown** interface scripts are symbolic links to scripts in the /sbin/ directory. When either of these scripts are called, they require the value of the interface to be specified, such as:
+```bash
+ifup eth0
+```
+
+:::caution
+The ifup and ifdown interface scripts are the only scripts that the user should use to bring up and take down network interfaces.
+:::

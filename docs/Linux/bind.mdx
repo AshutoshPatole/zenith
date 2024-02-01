@@ -1,0 +1,33 @@
+---
+sidebar_position: 10
+slug: /bind
+title: Berkeley Internet Name Domain (BIND)
+---
+---
+On most modern networks, including the Internet, users locate other computers by name. This frees users from the daunting task of remembering the numerical network address of network resources. The most effective way to configure a network to allow such name-based connections is to set up a Domain Name Service (DNS) or a nameserver, which resolves hostnames on the network to numerical addresses and vice versa.
+
+:::note
+BIND is also known as the service named in Red Hat Enterprise Linux.
+:::
+
+When a client host requests information from a nameserver, it usually connects to port 53. The nameserver then attempts to resolve the FQDN based on its resolver library, which may contain authoritative information about the host requested or cached data from an earlier query. If the nameserver does not already have the answer in its resolver library, it queries other nameservers, called root nameservers, to determine which nameservers are authoritative for the FQDN in question. Then, with that information, it queries the authoritative nameservers to determine the IP address of the requested host. If a reverse lookup is performed, the same procedure is used, except that the query is made with an unknown IP address rather than a name.
+
+## Nameserver Zones
+On the Internet, the FQDN of a host can be broken down into different sections. These sections are organized into a hierarchy (much like a tree), with a main trunk, primary branches, secondary branches, and so forth. Consider the following FQDN:
+```
+wetty.live.ashutoshpatole.me
+```
+When looking at how an FQDN is resolved to find the IP address that relates to a particular system, read the name from right to left, with each level of the hierarchy divided by periods (.). In this example, **me** defines the top level domain for this FQDN. The name **ashutoshpatole** is a sub-domain under **me**, while **live** is a sub-domain under **ashutoshpatole**. The name furthest to the left, **live**, identifies a specific machine hostname.
+
+Except for the hostname, each section is called a zone, which defines a specific namespace. A namespace controls the naming of the sub-domains to its left. While this example only contains two sub-domains, an FQDN must contain at least one sub-domain but may include many more, depending upon how the namespace is organized.
+
+## BIND as a Nameserver
+BIND performs name resolution services through the /usr/sbin/named daemon. BIND also includes an administration utility called /usr/sbin/rndc.
+
+BIND stores its configuration files in the following locations:
+- /etc/named.conf
+
+    The configuration file for the named daemon
+- /var/named/ directory
+
+    The named working directory which stores zone, statistic, and cache files
