@@ -1,0 +1,43 @@
+---
+slug: /dumpe2fs
+---
+
+
+You can learn a lot about your ext2 or ext3 filesystem with the dumpe2fs command. This command’s syntax is fairly straightforward:
+
+```bash
+[thor@marvel-studios ~]$ dumpe2fs [options] device
+```
+device is the filesystem device file, such as /dev/sdb3. This command accepts several options (signified by options), most of which are rather obscure. The most important option is probably -h, which causes the utility to omit information about group descriptors. (This information is helpful in very advanced filesystem debugging but not for basic filesystem tuning.) Unless you’re a filesystem expert and need to debug a corrupted filesystem, you’ll most likely to want to use dumpe2fs with the -h option. The result is about three-dozen lines of output, each specifying a particular filesystem option, like these:
+
+:::tip
+Use **`man dumpe2fs`** for more options.
+:::
+
+```bash
+Last mounted on: <not available>
+Filesystem features: has_journal filetype sparse_super
+Filesystem state: clean
+Inode count: 657312
+Block count: 1313305
+Last checked: Wed Feb 02 17:18:23 2022
+Check interval: 15552000 (6 months)
+```
+
+Some of these options meanings are fairly self-explanatory; for instance, the filesystem was last checked on February 2, 2022. Other options aren’t so obvious; for instance, the Inode count line may be puzzling. (It’s a count of the number of inodes supported by the filesystem. Each inode contains information for one file, so the number of inodes effectively limits the number of files you can store.) The next two sections describe some of the options that you may want to change. For now, you should know that you could retrieve information about how your filesystems are currently configured using dumpe2fs. You can then use this information when modifying the configuration; if your current settings seem reasonable, you can leave them alone, but if they seem it will adapted to your configuration, you can change them. Unlike many low-level disk utilities, dumpe2fs can be safely run on a filesystem that’s currently mounted. This can be handy when you’re studying your configuration to decide what to modify.
+
+Most other filesystems lack an equivalent to dumpe2fs, but XFS provides something with at least some surface similarities: xfs_info. To invoke it, pass the command the name of the partition that holds the filesystem that you want to check:
+
+```bash
+[thor@marvel-studios ~]$ xfs_info /dev/sda3
+meta-data=/dev/sda3 isize=256 agcount=88, agsize=1032192 blks
+= sectsz=512 attr=0
+data = bsize=4096 blocks=89915392, imaxpct=25 = sunit=0 swidth=0 blks, unwritten=1
+naming =version 2 bsize=4096
+log =internal bsize=4096 blocks=8064, version=1 = sectsz=512 sunit=0 blks
+realtime =none extsz=65536 blocks=0, rtextents=0
+```
+
+Instead of the partition name, you can pass the mount point, such as /home or /usr/ local. Unlike most filesystem tools, xfs_info requires that the filesystem be mounted. The information returned by xfs_info is fairly technical, mostly related to block sizes, sector sizes, and so on.
+
+Another XFS tool is xfs_metadump. This program copies the filesystem’s metadata (filenames, file sizes, and so on) to a file. For instance, xfs_metadump /dev/sda3 ~/dumpfile copies the metadata to ~/dump-file. This command doesn’t copy actual file contents and so isn’t useful as a backup tool. Instead, it’s intended as a debugging tool; if the filesystem is behaving strangely.

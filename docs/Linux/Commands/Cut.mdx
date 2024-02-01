@@ -1,0 +1,36 @@
+---
+slug: /cut
+---
+
+
+The cut command extracts portions of input lines and displays them on standard output. You can specify what to cut from input lines in several ways:
+
+ - By Byte The -b list or --bytes=list option cuts the specified list of bytes from the input file. (The format of a list is described shortly.)
+
+ - By Character The -c list or --characters=list option cuts the specified list of characters from the input file. In practice, this method and the by-byte method usually produce identical results. (If the input file uses a multi-byte encoding system, though, the results won’t be identical.)
+
+ - By Field The -f list or --fields=list option cuts the specified list of fields from the input file. By default, a field is a tab-delimited section of a line, but you can change the delimiting character with the -d char, --delim=char, or --delimiter=char option, where char is the character you want to use to delimit fields. 
+
+```bash
+[thor@marvel-studios ~]$ ifconfig eth0
+eth0 Link encap:Ethernet HWaddr 00:0C:76:96:A3:73
+ inet addr:192.168.1.3 Bcast:192.168.1.255 Mask:255.255.255.0
+ inet6 addr: fe80::20c:76ff:fe96:a373/64 Scope:Link
+ UP BROADCAST NOTRAILERS RUNNING MULTICAST MTU:1500 Metric:1
+ RX packets:7127424 errors:0 dropped:0 overruns:0 frame:0
+ TX packets:5273519 errors:0 dropped:0 overruns:0 carrier:0
+ collisions:0 txqueuelen:1000
+ RX bytes:6272843708 (5982.2 Mb) TX bytes:1082453585 (1032.3 Mb)
+ Interrupt:10 Base address:0xde00
+``` 
+Unfortunately, most of this information is extraneous for the desired purpose. The hardware address is the 6-byte hexadecimal number following HWaddr. To extract that data, you can combine grep with cut in a pipe:
+
+```bash
+[thor@marvel-studios ~]$ ifconfig eth0 | grep HWaddr | cut -d “ “ -f 11
+```
+
+will result 
+
+```bash
+00:0C:76:96:A3:73
+```

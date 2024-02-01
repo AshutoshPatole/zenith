@@ -234,4 +234,4 @@ This one works like the using default values, but the default text you give is n
 echo "Your home directory is: ${HOME:=/home/$USER}."
 echo "$HOME will be used to store your personal data."
 ```
-After the first expansion on line 1 `${HOME:=/home/$USER}`, HOME is **set and usable**. */}
+After the first expansion on line 1 `${HOME:=/home/$USER}`, HOME is **set and usable**.
