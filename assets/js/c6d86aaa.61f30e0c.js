@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[543],{1070:e=>{e.exports=JSON.parse('{"label":"command","permalink":"/zenith/tags/command","allTagsPath":"/zenith/tags","count":1,"items":[{"id":"Linux/Commands/Cut","title":"Cut","description":"---","permalink":"/zenith/cut"}],"unlisted":false}')}}]);

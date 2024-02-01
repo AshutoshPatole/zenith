@@ -1,0 +1,1 @@
+"use strict";(self.webpackChunkdocs=self.webpackChunkdocs||[]).push([[6245],{8498:e=>{e.exports=JSON.parse('{"label":"grep","permalink":"/zenith/tags/grep","allTagsPath":"/zenith/tags","count":1,"items":[{"id":"Linux/Commands/AWK","title":"AWK","description":"---","permalink":"/zenith/awk"}],"unlisted":false}')}}]);
