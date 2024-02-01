@@ -1,8 +1,11 @@
 ---
 slug: /cut
+tags: 
+  - linux
+  - command
 ---
 
-
+---
 The cut command extracts portions of input lines and displays them on standard output. You can specify what to cut from input lines in several ways:
 
  - By Byte The -b list or --bytes=list option cuts the specified list of bytes from the input file. (The format of a list is described shortly.)
@@ -26,7 +29,7 @@ eth0 Link encap:Ethernet HWaddr 00:0C:76:96:A3:73
 Unfortunately, most of this information is extraneous for the desired purpose. The hardware address is the 6-byte hexadecimal number following HWaddr. To extract that data, you can combine grep with cut in a pipe:
 
 ```bash
-[thor@marvel-studios ~]$ ifconfig eth0 | grep HWaddr | cut -d “ “ -f 11
+[thor@marvel-studios ~]$ ifconfig eth0 | grep HWaddr | cut -d " " -f 11
 ```
 
 will result 
